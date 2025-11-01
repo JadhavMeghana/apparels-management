@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Package, FolderTree, Warehouse, AlertTriangle } from 'lucide-react';
 import { productApi, categoryApi, inventoryApi } from '../services/api';
-import type { Product, Category, Inventory } from '../types';
+import type { Inventory } from '../types';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
