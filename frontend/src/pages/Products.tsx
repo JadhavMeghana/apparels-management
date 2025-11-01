@@ -7,6 +7,7 @@ const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -33,10 +34,15 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
+      setError(null);
       const response = await productApi.getAll();
       setProducts(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching products:', error);
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          'Failed to fetch products. Please check if the backend is running and VITE_API_URL is configured.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -44,10 +50,15 @@ const Products = () => {
 
   const fetchCategories = async () => {
     try {
+      setError(null);
       const response = await categoryApi.getAll();
       setCategories(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching categories:', error);
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          'Failed to fetch categories. Please check if the backend is running and VITE_API_URL is configured.';
+      setError(errorMessage);
     }
   };
 
@@ -171,6 +182,14 @@ const Products = () => {
 
   return (
     <div>
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-800 font-medium">Error: {error}</p>
+          <p className="text-sm text-red-600 mt-1">
+            Make sure VITE_API_URL is set in Vercel environment variables pointing to your backend URL.
+          </p>
+        </div>
+      )}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Products</h1>
         <button

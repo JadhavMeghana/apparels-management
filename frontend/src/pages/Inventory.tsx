@@ -7,6 +7,7 @@ const Inventory = () => {
   const [inventory, setInventory] = useState<Inventory[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editingInventory, setEditingInventory] = useState<Inventory | null>(null);
   const [selectedProductId, setSelectedProductId] = useState<number | ''>('');
@@ -23,12 +24,15 @@ const Inventory = () => {
 
   const fetchInventory = async () => {
     try {
+      setError(null);
       const response = await inventoryApi.getAll();
       setInventory(response.data);
     } catch (error: any) {
       console.error('Error fetching inventory:', error);
-      const errorMessage = error.response?.data?.message || error.response?.data || 'Error fetching inventory';
-      alert(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          'Failed to fetch inventory. Please check if the backend is running and VITE_API_URL is configured.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -36,12 +40,15 @@ const Inventory = () => {
 
   const fetchProducts = async () => {
     try {
+      setError(null);
       const response = await productApi.getAll();
       setProducts(response.data);
     } catch (error: any) {
       console.error('Error fetching products:', error);
-      const errorMessage = error.response?.data?.message || error.response?.data || 'Error fetching products';
-      alert(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          'Failed to fetch products. Please check if the backend is running and VITE_API_URL is configured.';
+      setError(errorMessage);
     }
   };
 
@@ -137,6 +144,14 @@ const Inventory = () => {
 
   return (
     <div>
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-800 font-medium">Error: {error}</p>
+          <p className="text-sm text-red-600 mt-1">
+            Make sure VITE_API_URL is set in Vercel environment variables pointing to your backend URL.
+          </p>
+        </div>
+      )}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Inventory</h1>
         <button
