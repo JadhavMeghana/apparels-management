@@ -16,7 +16,8 @@ export default defineConfig({
   build: {
     // For Vercel deployment, build to 'dist'
     // For Spring Boot integration, build to '../src/main/resources/static'
-    outDir: process.env.BUILD_FOR_VERCEL ? 'dist' : '../src/main/resources/static',
+    // Vercel automatically sets VERCEL=1, or we use BUILD_FOR_VERCEL env var
+    outDir: (process.env.BUILD_FOR_VERCEL === 'true' || process.env.VERCEL === '1' || process.env.VERCEL) ? 'dist' : '../src/main/resources/static',
     emptyOutDir: true,
   },
 })
